@@ -19,6 +19,7 @@ const app  = express();
 // ── Middlewares ──────────────────────────────────────────────────────────────
 app.use(cors());           // Permite peticiones desde el Frontend
 app.use(express.json());
+app.use(express.static(path.join(__dirname)));
 
 // ── Cargar la base de datos SQLite ───────────────────────────────────────────
 let db;
@@ -70,10 +71,7 @@ app.get("/api/tareas", (req, res) => {
 
 // ── Ruta raíz (verificación rápida) ─────────────────────────────────────────
 app.get("/", (req, res) => {
-  res.json({
-    mensaje: "API de Tareas — Ingeniería de Software",
-    endpoints: { tareas: "GET /api/tareas" },
-  });
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // ── Iniciar servidor ─────────────────────────────────────────────────────────

@@ -17,20 +17,20 @@ async function createDatabase() {
   `);
 
   // Insertar tareas del semestre
+  // Asegúrate de que las URLs ahora apunten a la carpeta 'tareas'
   const tareas = [
-    {
-      titulo: "Tarea 1 — Página HTML de presentación personal (CV Web v.1)",
-      url: "https://juan-moreno.github.io/tareas/Tarea%201/index.html",
-    },
-    {
-      titulo: "Tarea 2 — Servidor Node.js/Express: endpoints HTTP y conectividad BD",
-      url: "https://juan-moreno.github.io/tareas/tarea2/index.html",
-    },
-    {
-      titulo: "Tarea 3 — Simulación de dados: distribución aleatoria con HTML/JS",
-      url: "https://juan-moreno.github.io/tareas/tarea3/index.html",
-    },
-    
+  {
+    titulo: "Tarea 1 — Simulación de juego de dados",
+    url: "https://github.com/Juan310805/portafolio-academicos/blob/main/tareas/tarea1/Juegos%20de%20Dados%20(1).html",
+  },
+  {
+    titulo: "Tarea 2 — Servidor Node.js/Express",
+    url: "https://github.com/Juan310805/portafolio-academicos/blob/main/tareas/tarea2/servidor.js",
+  },
+  {
+    titulo: "Tarea 3 — Software Engineering Visualization Tool",
+    url: "https://github.com/Juan310805/portafolio-academicos/blob/main/tareas/tarea3/main_SoftEngViz.py",
+  }
   ];
 
   const stmt = db.prepare("INSERT INTO tareas (titulo, url) VALUES (?, ?)");
