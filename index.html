@@ -436,7 +436,7 @@ const esLocal = window.location.hostname === "localhost" || window.location.host
 // Si es local, apunta a tu servidor local; si no, apunta al de producción en Render
 const API_URL = esLocal 
   ? "http://localhost:3000/api/tareas" 
-  : "https://portafolio-moreno-loera.onrender.com/api/tareas";
+  : "https://portafolio-academicos.onrender.com/api/tareas";
 
 console.log(`🚀 Conectando frontend a la API en: ${API_URL}`);
 
@@ -472,7 +472,7 @@ console.log(`🚀 Conectando frontend a la API en: ${API_URL}`);
       list.innerHTML = `<li><div class="state-msg state-error" role="alert">
         <strong>Error al cargar las tareas:</strong>&nbsp;${escapeHtml(err.message)}.
         Asegúrate de que el servidor esté corriendo en
-        <code>https://portafolio-moreno-loera.onrender.com/api/tareas</code>.
+        <code>https://portafolio-academicos.onrender.com/api/tareas</code>.
       </div></li>`;
       count.textContent = "";
       console.error("cargarTareas():", err);
