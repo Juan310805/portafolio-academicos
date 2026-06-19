@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juan Francisco Moreno Loera — Portafolio Académico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Tokens ──────────────────────────────────────────────────────────── */
+    :root {
+      --ink:       #0f1117;
+      --ink-soft:  #3d4255;
+      --mist:      #8490a8;
+      --rule:      #dde1ea;
+      --page:      #f7f8fb;
+      --card:      #ffffff;
+      --accent:    #2557d6;
+      --accent-lt: #e8eeff;
+      --accent-dk: #1840b0;
+      --tag-bg:    #eef1f8;
+
+      --serif: "DM Serif Display", Georgia, serif;
+      --sans:  "DM Sans", system-ui, sans-serif;
+
+      --radius: 10px;
+      --shadow: 0 2px 14px rgba(15,17,23,.07);
+    }
+
+    /* ── Reset ───────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--page);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .page-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Header / Hero ───────────────────────────────────────────────────── */
+    .cv-header {
+      position: relative;
+      padding: 60px 0 48px;
+      border-bottom: 1.5px solid var(--rule);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 32px;
+      align-items: end;
+    }
+
+    .cv-header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: -24px; right: -24px; height: 4px;
+      background: linear-gradient(90deg, var(--accent) 0%, #7c9ef7 60%, transparent 100%);
+    }
+
+    .cv-eyebrow {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .cv-name {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      line-height: 1.1;
+      color: var(--ink);
+      letter-spacing: -.01em;
+    }
+
+    .cv-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .cv-tagline {
+      margin-top: 12px;
+      font-size: 14px;
+      color: var(--ink-soft);
+      font-weight: 300;
+      max-width: 480px;
+    }
+
+    /* Badge de datos escolares */
+    .cv-badge {
+      background: var(--card);
+      border: 1.5px solid var(--rule);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+      min-width: 210px;
+      text-align: right;
+    }
+
+    .cv-badge-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--mist);
+      margin-bottom: 8px;
+    }
+
+    .cv-badge-item {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.9;
+    }
+
+    .cv-badge-item span {
+      font-weight: 300;
+      color: var(--ink-soft);
+      display: block;
+      font-size: 11px;
+    }
+
+    /* ── Section ─────────────────────────────────────────────────────────── */
+    .section {
+      padding-top: 52px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: 1.45rem;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .section-rule {
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .section-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mist);
+      letter-spacing: .06em;
+    }
+
+    /* ── Task list ───────────────────────────────────────────────────────── */
+    #task-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .task-item {
+      background: var(--card);
+      border: 1.5px solid var(--rule);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      transition: border-color .18s, box-shadow .18s, transform .18s;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: fadeUp .38s ease forwards;
+    }
+
+    .task-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 20px rgba(37,87,214,.13);
+      transform: translateY(-1px);
+    }
+
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-index {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-style: italic;
+      color: var(--accent-lt);
+      text-align: center;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .task-item:hover .task-index {
+      color: var(--accent);
+    }
+
+    .task-body {}
+
+    .task-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.45;
+      margin-bottom: 4px;
+    }
+
+    .task-url-text {
+      font-size: 11px;
+      color: var(--mist);
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 380px;
+    }
+
+    .task-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--accent-lt);
+      color: var(--accent-dk);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      letter-spacing: .03em;
+      white-space: nowrap;
+      transition: background .15s, color .15s;
+    }
+
+    .task-link:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .task-link svg {
+      width: 12px; height: 12px; flex-shrink: 0;
+    }
+
+    /* ── Estados ─────────────────────────────────────────────────────────── */
+    .state-msg {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 22px 24px;
+      border-radius: var(--radius);
+      font-size: 14px;
+    }
+
+    .state-loading {
+      background: var(--accent-lt);
+      color: var(--accent-dk);
+    }
+
+    .state-error {
+      background: #fff0f0;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid var(--accent);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    .cv-footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cv-footer p {
+      font-size: 11px;
+      color: var(--mist);
+    }
+
+    .cv-footer strong {
+      color: var(--ink-soft);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .cv-header { grid-template-columns: 1fr; gap: 24px; }
+      .cv-badge { text-align: left; min-width: unset; }
+      .task-item { grid-template-columns: 36px 1fr; grid-template-rows: auto auto; }
+      .task-link { grid-column: 2; justify-self: start; margin-top: 4px; }
+      .task-url-text { max-width: 220px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .task-item { animation: none; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- ── Encabezado / Hero ───────────────────────────────────────────────── -->
+  <header class="cv-header">
+    <div>
+      <p class="cv-eyebrow">Portafolio Académico · Ingeniería de Software</p>
+      <h1 class="cv-name">Juan Francisco<br><em>Moreno Loera</em></h1>
+      <p class="cv-tagline">
+        Estudiante de Ingeniería en Sistemas Computacionales. Registro de entregas
+        del semestre con acceso directo a cada proyecto.
+      </p>
+    </div>
+
+    <aside class="cv-badge" aria-label="Datos escolares">
+      <p class="cv-badge-label">Datos escolares</p>
+      <p class="cv-badge-item">
+        Juan Francisco Moreno Loera
+        <span>Nombre</span>
+      </p>
+      <p class="cv-badge-item">
+        24040318
+        <span>Matrícula</span>
+      </p>
+      <p class="cv-badge-item">
+        J-305
+        <span>Grupo · Ingeniería de Software</span>
+      </p>
+    </aside>
+  </header>
+
+  <!-- ── Sección: Tareas ─────────────────────────────────────────────────── -->
+  <section class="section" aria-labelledby="tareas-heading">
+    <div class="section-header">
+      <h2 class="section-title" id="tareas-heading">Tareas del semestre</h2>
+      <span class="section-rule" aria-hidden="true"></span>
+      <span class="section-count" id="task-count" aria-live="polite"></span>
+    </div>
+
+    <ul id="task-list" aria-label="Lista de tareas">
+      <!-- cargado dinámicamente via fetch -->
+      <li>
+        <div class="state-msg state-loading" role="status">
+          <div class="spinner" aria-hidden="true"></div>
+          Consultando la base de datos…
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────── -->
+  <footer class="cv-footer">
+    <p>© 2025 · <strong>Juan Francisco Moreno Loera</strong></p>
+    <p>Datos obtenidos desde <strong>SQLite</strong> vía API REST (Node.js / Express)</p>
+  </footer>
+
+</div>
+
+<script>
+  // ── Configuración ──────────────────────────────────────────────────────
+
+  // ── Icono de enlace externo (SVG inline) ───────────────────────────────
+  const ICON_EXTERNAL = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M6 3H3a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-3"/>
+    <path d="M10 2h4v4M14 2 8 8"/>
+  </svg>`;
+
+  // ── Renderizar una tarea como <li> ─────────────────────────────────────
+  function renderTask(tarea, index, delay) {
+    const li = document.createElement("li");
+    li.className = "task-item";
+    li.style.animationDelay = `${delay}ms`;
+
+    // Truncar URL para mostrarse (sin abrir)
+    const urlDisplay = tarea.url.replace(/^https?:\/\//, "").slice(0, 55)
+                     + (tarea.url.length > 60 ? "…" : "");
+
+    li.innerHTML = `
+      <span class="task-index" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
+      <div class="task-body">
+        <p class="task-title">${escapeHtml(tarea.titulo)}</p>
+        <p class="task-url-text" title="${escapeHtml(tarea.url)}">${escapeHtml(urlDisplay)}</p>
+      </div>
+      <a class="task-link"
+         href="${escapeHtml(tarea.url)}"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Abrir ${escapeHtml(tarea.titulo)} en nueva pestaña">
+        Ver tarea ${ICON_EXTERNAL}
+      </a>
+    `;
+    return li;
+  }
+
+  // ── Sanitizar HTML básico ──────────────────────────────────────────────
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  // ── Configuración Dinámica de Entornos ──────────────────────────────────
+// Detectamos si el frontend se abrió de forma local (localhost o archivo)
+const esLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:";
+
+// Si es local, apunta a tu servidor local; si no, apunta al de producción en Render
+const API_URL = esLocal 
+  ? "http://localhost:3000/api/tareas" 
+  : "https://portafolio-moreno-loera.onrender.com/api/tareas";
+
+console.log(`🚀 Conectando frontend a la API en: ${API_URL}`);
+
+  // ── Fetch principal ────────────────────────────────────────────────────
+  async function cargarTareas() {
+    const list  = document.getElementById("task-list");
+    const count = document.getElementById("task-count");
+
+    try {
+      const res  = await fetch(API_URL);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+
+      const json = await res.json();
+      const tareas = json.data ?? json; // compatible con array directo o {data:[...]}
+
+      if (!Array.isArray(tareas) || tareas.length === 0) {
+        list.innerHTML = `<li><div class="state-msg state-error">
+          ⚠️ No se encontraron tareas en la base de datos.
+        </div></li>`;
+        return;
+      }
+
+      // Limpiar y renderizar
+      list.innerHTML = "";
+      tareas.forEach((tarea, i) => {
+        list.appendChild(renderTask(tarea, i, i * 70));
+      });
+
+      count.textContent = `${tareas.length} entrega${tareas.length !== 1 ? "s" : ""}`;
+
+    } catch (err) {
+      list.innerHTML = `<li><div class="state-msg state-error" role="alert">
+        <strong>Error al cargar las tareas:</strong>&nbsp;${escapeHtml(err.message)}.
+        Asegúrate de que el servidor esté corriendo en
+        <code>https://portafolio-moreno-loera.onrender.com/api/tareas</code>.
+      </div></li>`;
+      count.textContent = "";
+      console.error("cargarTareas():", err);
+    }
+  }
+
+  // ── Iniciar ────────────────────────────────────────────────────────────
+  cargarTareas();
+</script>
+</body>
+</html>
