@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Lanzamiento de dos dados | Control de igualdad y contador de intentos</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #1a2a3a 0%, #0f1a24 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Tarjeta principal (contenedor elegante) */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+            max-width: 650px;
+            width: 100%;
+            padding: 2rem 2rem 2.5rem;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(0px);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 0.4rem 0;
+            color: #1e2f3c;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        h1:before {
+            content: "🎲";
+            font-size: 2.4rem;
+        }
+
+        .sub {
+            border-left: 4px solid #ff914d;
+            padding-left: 1rem;
+            margin: 0.5rem 0 1.8rem 0;
+            color: #2c475b;
+            font-weight: 500;
+            background: #fef5e7;
+            border-radius: 0 20px 20px 0;
+            line-height: 1.3;
+        }
+
+        /* Panel de resultados actuales */
+        .dice-panel {
+            background: #f1f5f9;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: inset 0 1px 4px #0001, 0 6px 12px -6px rgba(0,0,0,0.2);
+        }
+
+        .dice-values {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .die {
+            text-align: center;
+            background: white;
+            border-radius: 2rem;
+            padding: 1rem 1.6rem;
+            min-width: 130px;
+            box-shadow: 0 8px 0 #b0c4d9;
+            transition: transform 0.1s ease;
+        }
+
+        .die-label {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #3b6e8b;
+            margin-bottom: 12px;
+        }
+
+        .die-number {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #1f2f3a;
+            background: #eef2ff;
+            display: inline-block;
+            width: 80px;
+            border-radius: 70px;
+            padding: 10px 0;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+        }
+
+        .match-badge {
+            background: #2b7a4b;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 10px 18px;
+            border-radius: 60px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .match-badge span {
+            font-size: 1.5rem;
+        }
+
+        /* Info de historial / contador de lanzamientos */
+        .stats-area {
+            background: #e6edf2;
+            border-radius: 1.5rem;
+            padding: 1rem 1.4rem;
+            margin: 1.2rem 0 1.6rem 0;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .attempt-counter {
+            background: #1e2f3c;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .reset-message {
+            background: #ffedd5;
+            padding: 8px 16px;
+            border-radius: 40px;
+            color: #9b4a1a;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Botón principal */
+        .btn-roll {
+            background: #ff914d;
+            border: none;
+            width: 100%;
+            padding: 1.1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            box-shadow: 0 6px 0 #b45f2b;
+            margin-top: 10px;
+        }
+
+        .btn-roll:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #b45f2b;
+        }
+
+        .btn-roll:hover {
+            background: #ff7a2f;
+            transform: scale(0.99);
+        }
+
+        /* Lista de historial de lanzamientos */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 2px dashed #cbdbe2;
+            padding-top: 1.2rem;
+        }
+
+        .history-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-list {
+            background: #f9fafc;
+            border-radius: 1.2rem;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px 12px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            box-shadow: inset 0 0 0 1px #e2e8f0;
+        }
+
+        .history-item {
+            padding: 6px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .match-history {
+            background: #c6f7d0;
+            border-radius: 20px;
+            font-weight: bold;
+            padding: 4px 8px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        footer {
+            font-size: 0.75rem;
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6f8faa;
+        }
+
+        button {
+            background: none;
+            border: none;
+        }
+
+        .reset-btn {
+            background: #334155;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-left: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #1e293b;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Lanzamiento de dos dados</h1>
+    <div class="sub">
+        🎲 Cada vez que pulses el botón se lanzan ambos dados • Se registra si son iguales<br>
+        🎯 Cuando salgan iguales, se muestra el intento exacto donde se logró la coincidencia.
+    </div>
+
+    <!-- Panel principal: valores actuales de los dados -->
+    <div class="dice-panel">
+        <div class="dice-values">
+            <div class="die">
+                <div class="die-label">Dado 1 🎲</div>
+                <div class="die-number" id="dado1Valor">-</div>
+            </div>
+            <div class="die">
+                <div class="die-label">Dado 2 🎲</div>
+                <div class="die-number" id="dado2Valor">-</div>
+            </div>
+        </div>
+        <div id="mensajeIgualdad" style="text-align: center; min-height: 60px; margin-top: 10px;">
+            <!-- Aquí se mostrará si son iguales + info de lanzamiento de la coincidencia -->
+        </div>
+    </div>
+
+    <!-- Contador de intentos acumulados desde el último reinicio -->
+    <div class="stats-area">
+        <div class="attempt-counter">
+            📊 Intentos totales: <strong id="contadorIntentos">0</strong>
+        </div>
+        <div class="reset-message" id="ultimaCoincidenciaMsg">
+            ✨ Última coincidencia: —
+        </div>
+        <button id="resetBtn" class="reset-btn" aria-label="Reiniciar contador e historial">🔄 Reiniciar sesión</button>
+    </div>
+
+    <!-- Botón de lanzamiento -->
+    <button id="btnLanzar" class="btn-roll">
+        🎲 Lanzar dados 🎲
+    </button>
+
+    <!-- Historial de lanzamientos (muestra cada tirada y si hubo igualdad) -->
+    <div class="history-section">
+        <div class="history-title">
+            📜 Registro de lanzamientos
+            <span style="font-size:0.7rem;">(últimos 20)</span>
+        </div>
+        <div id="historialLista" class="history-list">
+            <div style="color:#8f9eb2; text-align:center; padding:8px;">Aún no hay lanzamientos</div>
+        </div>
+    </div>
+    <footer>
+        ✅ Validación automática: cuando ambos dados son iguales, se indica y muestra el número de intento donde ocurrió.
+    </footer>
+</div>
+
+<script>
+    // ========================  ESTADO DE LA APLICACIÓN ========================
+    // Control de lanzamientos (totales desde el último reset manual)
+    let totalLanzamientos = 0;
+
+    // Historial: guardaremos objetos con: { intento, dado1, dado2, esIgual }
+    let historial = [];
+
+    // Para almacenar el último intento donde hubo coincidencia (para mostrarlo en zona de "última coincidencia")
+    let ultimoIntentoCoincidencia = null;      // null o número (intento en el que se obtuvo igualdad)
+    let ultimoMensajeCoincidenciaMostrado = "";
+
+    // Elementos del DOM
+    const dado1Span = document.getElementById("dado1Valor");
+    const dado2Span = document.getElementById("dado2Valor");
+    const mensajeIgualdadDiv = document.getElementById("mensajeIgualdad");
+    const contadorIntentosSpan = document.getElementById("contadorIntentos");
+    const ultimaCoincidenciaSpan = document.getElementById("ultimaCoincidenciaMsg");
+    const historialContainer = document.getElementById("historialLista");
+    const btnLanzar = document.getElementById("btnLanzar");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // Función principal: lanza dos dados (valores 1-6)
+    function lanzarDados() {
+        const valor1 = Math.floor(Math.random() * 6) + 1;
+        const valor2 = Math.floor(Math.random() * 6) + 1;
+        return { dado1: valor1, dado2: valor2 };
+    }
+
+    // Actualiza la interfaz: muestra los dados actuales, el mensaje de igualdad,
+    // actualiza contadores y el historial.
+    // Parámetro: resultadoDelLanzamiento { dado1, dado2 }
+    function procesarLanzamiento(resultado) {
+        const { dado1, dado2 } = resultado;
+
+        // 1. Incrementar el contador global de intentos
+        totalLanzamientos++;
+        const intentoActual = totalLanzamientos;
+
+        // 2. Determinar si son iguales
+        const sonIguales = (dado1 === dado2);
+
+        // 3. Guardar en historial (con el número de intento actual)
+        historial.unshift({   // insertar al inicio para mostrar los más recientes arriba (opcional, pero lo dejamos al inicio para orden visual)
+            intento: intentoActual,
+            dado1: dado1,
+            dado2: dado2,
+            esIgual: sonIguales
+        });
+        // Limitar historial a máximo 25 registros para no saturar la vista (pero mantenemos coherencia)
+        if (historial.length > 25) historial.pop();
+
+        // 4. Actualizar visualización de los valores de dados actuales
+        dado1Span.textContent = dado1;
+        dado2Span.textContent = dado2;
+
+        // 5. Mostrar mensaje según igualdad y (si es igual, mostrar el número de intento en el que se logró)
+        if (sonIguales) {
+            // Registrar el intento donde se logró coincidencia
+            ultimoIntentoCoincidencia = intentoActual;
+            // Construir mensaje bonito: "¡COINCIDENCIA! Ambos dados: X y X. Logrado en el intento #N"
+            mensajeIgualdadDiv.innerHTML = `
+                <div class="match-badge">
+                    <span>🎯✨</span> ¡SON IGUALES! (${dado1} y ${dado2}) 
+                    <strong>Logrado en el lanzamiento #${intentoActual}</strong>
+                    <span>🎉</span>
+                </div>
+            `;
+            // También actualizar la sección de "Última coincidencia"
+            ultimaCoincidenciaSpan.innerHTML = `✨ Última coincidencia: <strong>intento #${intentoActual}</strong> (${dado1}=${dado2}) 🎲`;
+        } else {
+            // No hay coincidencia: limpiar mensaje de igualdad mostrando info estándar
+            mensajeIgualdadDiv.innerHTML = `
+                <div style="background:#eef2ff; padding:8px 14px; border-radius:40px; display:inline-block; font-size:0.95rem;">
+                    🔹 Dados diferentes: ${dado1} y ${dado2} 🔹
+                </div>
+            `;
+            // Si no hay coincidencia, NO actualizamos el mensaje de última coincidencia, se mantiene el anterior
+            // (solo se actualiza cuando hay igualdad)
+            if (ultimoIntentoCoincidencia === null) {
+                ultimaCoincidenciaSpan.innerHTML = `✨ Última coincidencia: — (aún no hay)`;
+            } else {
+                ultimaCoincidenciaSpan.innerHTML = `✨ Última coincidencia: <strong>intento #${ultimoIntentoCoincidencia}</strong> 🎲`;
+            }
+        }
+
+        // 6. Actualizar contador de intentos totales en UI
+        contadorIntentosSpan.textContent = totalLanzamientos;
+
+        // 7. Refrescar historial visual
+        renderizarHistorial();
+    }
+
+    // Función para renderizar el historial de lanzamientos (desde el más reciente al más antiguo)
+    function renderizarHistorial() {
+        if (!historialContainer) return;
+
+        if (historial.length === 0) {
+            historialContainer.innerHTML = `<div style="color:#8f9eb2; text-align:center; padding:8px;">📭 Aún no hay lanzamientos. Presiona el botón 🎲</div>`;
+            return;
+        }
+
+        // Mostramos historial en orden cronológico descendente? Para que se vea primero el último lanzamiento.
+        // La variable historial guarda los nuevos al inicio (unshift), así que ya están en orden descendente (más reciente primero)
+        // Pero para evitar confusión, simplemente iteramos sobre el array 'historial' (que tiene los últimos primero)
+        let html = '';
+        for (let i = 0; i < historial.length; i++) {
+            const item = historial[i];
+            const intentoNum = item.intento;
+            const d1 = item.dado1;
+            const d2 = item.dado2;
+            const igual = item.esIgual;
+
+            // Formatear linea del historial
+            let estadoTexto = '';
+            let claseExtra = '';
+            if (igual) {
+                estadoTexto = `🔥 ¡IGUALES! (${d1} = ${d2}) → coincidencia en intento #${intentoNum} 🔥`;
+                claseExtra = 'match-history';
+            } else {
+                estadoTexto = `🎲 Lanzamiento #${intentoNum}:  ${d1}  y  ${d2}  (diferentes)`;
+                claseExtra = '';
+            }
+
+            // Ícono decorativo
+            const iconoIgual = igual ? '✅✨' : '🎲';
+            html += `<div class="history-item" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>${iconoIgual} <strong>#${intentoNum}</strong> → [${d1}] [${d2}]</span>
+                        <span class="${claseExtra}" style="${igual ? 'background:#b9f6ca; padding:2px 12px; border-radius:30px; font-size:0.8rem;' : 'color:#64748b;'}">${igual ? `🎯 COINCIDENCIA en intento ${intentoNum}` : '⚡ sin igualdad'}</span>
+                    </div>`;
+        }
+        historialContainer.innerHTML = html;
+    }
+
+    // Reiniciar completamente la sesión: contador de intentos, historial, limpiar mensajes y resetear estado de última coincidencia
+    function resetearSesion() {
+        totalLanzamientos = 0;
+        historial = [];
+        ultimoIntentoCoincidencia = null;
+
+        // Limpiar valores visuales de dados
+        dado1Span.textContent = "-";
+        dado2Span.textContent = "-";
+
+        // Restablecer mensaje de igualdad a estado neutral
+        mensajeIgualdadDiv.innerHTML = `<div style="color:#6c7f8f; background:#eef2ff; padding:6px 14px; border-radius:40px; display:inline-block;">⚡ Lanza los dados para empezar</div>`;
+
+        // Reset contador en UI
+        contadorIntentosSpan.textContent = "0";
+
+        // Reset mensaje última coincidencia
+        ultimaCoincidenciaSpan.innerHTML = `✨ Última coincidencia: — (reiniciado)`;
+
+        // Limpiar historial visual
+        renderizarHistorial();
+
+        // (Opcional) agregar un pequeño efecto visual en consola, pero sin errores
+        console.log("Sesión reiniciada. Todos los contadores e historial se han limpiado.");
+    }
+
+    // Evento principal de lanzamiento, con integridad: cada clic lanza dos dados, los procesa y actualiza todo.
+    function eventoClickLanzar() {
+        // 1. Lanzar dos dados mediante función pura
+        const { dado1, dado2 } = lanzarDados();
+        // 2. Procesar el lanzamiento (actualiza estado, historial, UI)
+        procesarLanzamiento({ dado1, dado2 });
+    }
+
+    // Inicializar la página: listeners, y posible estado inicial limpio (sin lanzamientos)
+    function init() {
+        // Reset inicial por si acaso (evita datos residuales)
+        resetearSesion();
+
+        // Agregar eventos
+        btnLanzar.addEventListener("click", eventoClickLanzar);
+        resetBtn.addEventListener("click", resetearSesion);
+
+        // Opcional: mensaje de bienvenida dinámico en consola (solo informativo)
+        console.log("🎲 Simulador de dos dados listo. Cada lanzamiento valida igualdad y muestra intento donde ocurre.");
+    }
+
+    // Arrancar la aplicación
+    init();
+</script>
+</body>
+</html>
